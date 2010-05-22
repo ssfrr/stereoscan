@@ -2,7 +2,11 @@
 #ifndef STEREOTOXYZCONVERTER_H
 #define STEREOTOXYZCONVERTER_H
 
-#include "Point3D.h"
+typedef struct {
+	float x;
+	float y;
+	float z;
+} Point3D;
 
 class StereoToXYZConverter {
 	// camSeparation is in cm
@@ -25,5 +29,11 @@ class StereoToXYZConverter {
 	void setcam2Angle(float angle);
 	void setCamera(float FOV, unsigned int xRes, unsigned int yRes);
 	Point3D getPoint(float x1, float y1, float x2, float y2);
-}
+	float getSeparation();
+	float getCam1Angle();
+	float getCam2Angle();
+	float getFOV();
+	unsigned int getXRes();
+	unsigned int getYRes();
+};
 #endif // STEREOTOXYZCONVERTER_H
