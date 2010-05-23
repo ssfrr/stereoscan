@@ -36,9 +36,7 @@ class StereoScanApp : public ofBaseApp{
 		bool frame1Fresh;
 		bool frame2Fresh;
 
-		float vertX[100];
-		float vertY[100];
-		float vertZ[100];
+		Point3D modelCentroid;
 
 	public:
 		void setup();

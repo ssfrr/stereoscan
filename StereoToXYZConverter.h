@@ -1,12 +1,7 @@
 
 #ifndef STEREOTOXYZCONVERTER_H
 #define STEREOTOXYZCONVERTER_H
-
-typedef struct {
-	float x;
-	float y;
-	float z;
-} Point3D;
+#include "Point3D.h"
 
 class StereoToXYZConverter {
 	// camSeparation is in cm

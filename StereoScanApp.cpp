@@ -32,11 +32,12 @@ void StereoScanApp::setup(){
 	frame1Fresh = false;
 	frame2Fresh = false;
 
-	ofSeedRandom();
+	// add a bunch of random vertices for testing
+	/*ofSeedRandom();
 	for(int i = 0; i < 4000; i++) {
 		vertices.addPoint(ofRandom(-200,200),ofRandom(-200,200),ofRandom(-200,200));
-	}
-	converter.setGeometry(17.78, 45, 45);
+	}*/
+	converter.setGeometry(8.12, 84.289, 84.289);
 	ofSetFrameRate(24);
 	ofSetVerticalSync(true);
 	glPointSize(4);
@@ -80,6 +81,17 @@ void StereoScanApp::update(){
 
 		contourFinder1.findContours(diff1, 1, 200, 10, false);
 		contourFinder2.findContours(diff2, 1, 200, 10, false);
+
+		// if there's a blob in both images
+		if(contourFinder1.blobs.size() && contourFinder2.blobs.size()) {
+			float x1,x2,y1,y2;
+			x1 = contourFinder1.blobs[0].centroid.x;
+			y1 = contourFinder1.blobs[0].centroid.y;
+			x2 = contourFinder2.blobs[0].centroid.x;
+			y2 = contourFinder2.blobs[0].centroid.y;
+			Point3D vect = converter.getPoint(x1,y1,x2,y2);
+			vertices.addPoint(vect.x,vect.y,vect.z);
+		}
 	}
 
 }
@@ -130,7 +142,9 @@ void StereoScanApp::draw(){
 	float *pointArray = vertices.getVectData();
     glBegin(GL_POINTS);
 		for(int i = 0; i < vertices.getNumPoints(); i++) {
-        	glVertex3f(pointArray[i*3], pointArray[i*3+1], pointArray[i*3+2]);
+        	glVertex3f((pointArray[i*3] - modelCentroid.x) *100,
+					(pointArray[i*3+1] - modelCentroid.y) *100,
+					(pointArray[i*3+2] - modelCentroid.z) *100);
 		}
     glEnd();
 	glPopMatrix();
@@ -138,7 +152,7 @@ void StereoScanApp::draw(){
 
 	ofSetColor(0xffffff);
 	char reportStr[1024];
-	sprintf(reportStr, "bg subtraction and blob detection\npress ' ' to capture bg\nthreshold %i (press: +/-)\nnum blobs found %i, fps: %f", threshold, contourFinder1.blobs.size(), ofGetFrameRate());
+	sprintf(reportStr, "press ' ' to capture bg\nthreshold %i (press: +/-)\nnum points: %i, fps: %f", threshold, vertices.getNumPoints(), ofGetFrameRate());
 	ofDrawBitmapString(reportStr, 20, 600);
 
 }
@@ -158,6 +172,9 @@ void StereoScanApp::keyPressed  (int key){
 		case '-':
 			threshold --;
 			if (threshold < 0) threshold = 0;
+			break;
+		case 'c':
+			modelCentroid = vertices.getCentroid();
 			break;
 	}
 }
