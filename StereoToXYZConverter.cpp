@@ -50,12 +50,13 @@ Point3D StereoToXYZConverter::getPoint(float x1, float y1, float x2, float y2) {
 	Point3D outPoint;
 	float horizToDiagRatio = xRes / sqrt(xRes * xRes + yRes * yRes);
 	float xFOV = horizToDiagRatio * FOV;
+	//calculate deflection
 	float deflection1 = x1 * xFOV / xRes;
 	float deflection2 = x2 * xFOV / xRes;
-	float A = cos(cam1Angle - deflection1);
-	float B = cos(cam2Angle + deflection2);
-	float C = sin(cam1Angle - deflection1);
-	float D = -sin(cam1Angle + deflection1);
+	float A = cos((cam1Angle - deflection1) * M_PI / 180);
+	float B = cos((cam2Angle + deflection2) * M_PI / 180);
+	float C = sin((cam1Angle - deflection1) * M_PI / 180);
+	float D = -sin((cam2Angle + deflection2) * M_PI / 180);
 	float r1 = camSeparation * D / ((A * D) - (B * C));
 	float r2 = -camSeparation * C / ((A * D) - (B * C));
 
@@ -65,8 +66,8 @@ Point3D StereoToXYZConverter::getPoint(float x1, float y1, float x2, float y2) {
 	// Calculate the vertical component
 	float vertToDiagRatio = yRes / sqrt(xRes * xRes + yRes * yRes);
 	float yFOV = vertToDiagRatio * FOV;
-	float elevation1 = y1 * yFOV / yRes;
-	float elevation2 = y2 * yFOV / yRes;
+	float elevation1 = y1 * yFOV / yRes * M_PI / 180;
+	float elevation2 = y2 * yFOV / yRes * M_PI / 180;
 
 	// average the altitude calculated from the 2 cameras
 	outPoint.z = (r1 * tan(elevation1) + r2 * tan(elevation2)) / 2;
