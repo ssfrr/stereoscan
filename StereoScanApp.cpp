@@ -7,6 +7,7 @@
 void StereoScanApp::setup(){
 
     ofSetWindowShape(1200,800);
+	ofSetWindowTitle("StereoScan");
 	xRes = 320;
 	yRes = 240;
 	vidGrabber1.setDeviceID(0);
@@ -32,6 +33,8 @@ void StereoScanApp::setup(){
 
 	frame1Fresh = false;
 	frame2Fresh = false;
+
+	scale = 1;
 
 	// add a bunch of random vertices for testing
 	/*ofSeedRandom();
@@ -138,8 +141,9 @@ void StereoScanApp::draw(){
     ofSetColor(20, 20, 20);
 	glPushMatrix();
 	glTranslatef(1100,200,-400);
-	glRotatef(-mouseY,1,0,0);
-	glRotatef(mouseX,0,1,0);
+	glRotatef(xrot, 0,1,0);
+	glRotatef(yrot, 1,0,0);
+	glScalef(scale,scale,scale);
 	float *pointArray = vertices.getVectData();
     glBegin(GL_POINTS);
 		for(int i = 0; i < vertices.getNumPoints(); i++) {
@@ -153,7 +157,7 @@ void StereoScanApp::draw(){
 
 	ofSetColor(0xffffff);
 	char reportStr[1024];
-	sprintf(reportStr, "press ' ' to capture bg\nthreshold %i (press: +/-)\nnum points: %i, fps: %f", threshold, vertices.getNumPoints(), ofGetFrameRate());
+	sprintf(reportStr, "press ' ' to capture bg\nthreshold %i (press: +/-)\npress 'c' to center\npress 'u' to remove last vertex\npress 'd' to erase current model\nnum points: %i, fps: %f", threshold, vertices.getNumPoints(), ofGetFrameRate());
 	ofDrawBitmapString(reportStr, 20, 600);
 
 }
@@ -177,6 +181,13 @@ void StereoScanApp::keyPressed  (int key){
 		case 'c':
 			modelCentroid = vertices.getCentroid();
 			break;
+		case 'u':
+			vertices.removeLastPoint();
+			break;
+		case 'd':
+			while(vertices.getNumPoints())
+				vertices.removeLastPoint();
+			break;
 		case 's':
 			ofstream outfile;
 			outfile.open("scan.obj");
@@ -192,10 +203,22 @@ void StereoScanApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void StereoScanApp::mouseDragged(int x, int y, int button){
+	static int oldx;
+	static int oldy;
+
+	if(x - oldx < 20 && oldx - x < 20)
+		xrot += (x - oldx);
+	if(y - oldy < 20 && oldy - y < 20)
+		yrot += (oldy - y);
+	oldx = x;
+	oldy = y;
 }
 
 //--------------------------------------------------------------
 void StereoScanApp::mousePressed(int x, int y, int button){
+	if(button == 3 || button == 4) {
+		scale *= (button == 3 ? 1.1 : 0.9);
+	}
 }
 
 //--------------------------------------------------------------
