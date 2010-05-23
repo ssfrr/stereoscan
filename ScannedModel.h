@@ -2,6 +2,8 @@
 #define SCANNEDMODEL_H
 
 #include "Point3D.h"
+#include <fstream>
+using namespace std;
 class ScannedModel {
 	public:
 	ScannedModel();
@@ -10,6 +12,7 @@ class ScannedModel {
 	void removeLastPoint();
 	unsigned int getNumPoints();
 	float *getVectData();
+	friend ostream &operator<<(ostream &os, const ScannedModel &model);
 
 	private:
 	void growArray();

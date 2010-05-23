@@ -54,3 +54,12 @@ unsigned int ScannedModel::getNumPoints() {
 float *ScannedModel::getVectData() {
 	return vectArray;
 }
+
+ostream &operator<<(ostream &os, const ScannedModel &model) {
+	os << "# This object was generated with StereoScan\n";
+	for(unsigned int i = 0; i < model.nextFreeIndex / 3; i++) {
+		os << "v " << model.vectArray[i*3] << " " << 
+			model.vectArray[i*3+1] << " " << model.vectArray[i*3+2] << endl;
+	}
+	return os;
+}

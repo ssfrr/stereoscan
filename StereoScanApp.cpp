@@ -1,5 +1,6 @@
 #include "StereoScanApp.h"
 #include <GL/gl.h>
+#include <fstream>
 
 
 //--------------------------------------------------------------
@@ -175,6 +176,12 @@ void StereoScanApp::keyPressed  (int key){
 			break;
 		case 'c':
 			modelCentroid = vertices.getCentroid();
+			break;
+		case 's':
+			ofstream outfile;
+			outfile.open("scan.obj");
+			outfile << vertices;
+			outfile.close();
 			break;
 	}
 }
